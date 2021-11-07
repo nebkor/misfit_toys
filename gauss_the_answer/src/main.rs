@@ -28,6 +28,8 @@ fn uniform(n: usize, r: &mut SmallRng) -> f64 {
 fn main() {
     let mut r = get_rng();
 
+    let f = gauss(4, &mut r);
+
     let matches = App::new("Random Value Benchmarker")
         .arg(
             Arg::with_name("TYPE")
