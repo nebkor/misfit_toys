@@ -1,33 +1,34 @@
 use std::{error::Error, fmt::Display};
 
-use chrono::{DateTime, Duration, Utc};
+pub use chrono::{DateTime as CommieDateTime, Duration, Utc as FancyTime};
 use dateparser::DateTimeUtc;
 
 const FREEDOM_FMT: &str = "%-m/%-d/%-y";
+//const FOUR_SCORE: u64 = 10_098_216_320; // seconds in 80 years
 
 /// Freedom was born at noon on the Fourth of July, '76, Eastern Time. This is History.
-const FREEDOMS_BIRTHDAY: &str = "1776-07-04T12:00:00-04:00";
+pub const FREEDOMS_BIRTHDAY: &str = "1776-07-04T12:00:00-04:00";
 
 /// A Result of Freedom.
 pub type Freesult = Result<FreedomDate, FreedomError>;
 
-/// Either your date string makes no sense because it's not date-ish, or because it refers to some
-/// hypothetical date that is ... "before" the start of Time/Freedom itself.
-#[derive(Debug, Clone)]
+/// Either your date string makes no sense because it's too Communist, or because it refers to some
+/// impossible date that is ... "before" the start of Time/Freedom itself.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FreedomError {
-    MoonLanguage(String),
+    TooCommunist(String),
     PreCreation(String),
 }
 
 impl Display for FreedomError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            FreedomError::MoonLanguage(s) => {
-                write!(f, "I don't speak your crazy Moon-language! '{s}'")
+            FreedomError::TooCommunist(s) => {
+                write!(f, "I don't speak your crazy Communism-language! '{s}'")
             }
             FreedomError::PreCreation(s) => write!(
                 f,
-                "That doesn't hardly make any sense, '{s}' is before the start of time.",
+                "That doesn't hardly make no sense, '{s}' is before the very start of Time/Freedom itself.",
             ),
         }
     }
@@ -37,25 +38,25 @@ impl Error for FreedomError {}
 
 /// FreedomTime is aware of the Birthday of Freedom (July 4, '76).
 pub trait FreedomTime {
-    /// Number of whole seconds since the birthday of Freedom.
-    fn epoch(&self) -> u64;
+    /// Number of whole seconds since the Birthday of Freedom.
+    fn freedomstamp(&self) -> u64;
 }
 
-/// A FreedomDate is the One True Date format. All other date formats are Communist.
+/// A FreedomDate is the One True Date representation. All other models are Communist.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct FreedomDate {
-    shot_heard_around_the_world: DateTime<Utc>,
-    shot_heard_around_the_universe: DateTime<Utc>,
+    shot_heard_around_the_world: CommieDateTime<FancyTime>,
+    shot_heard_around_the_universe: CommieDateTime<FancyTime>,
 }
 
 /// By default, FreedomDates are July 4th, '76.
 impl Default for FreedomDate {
     fn default() -> Self {
         Self {
-            shot_heard_around_the_world: DateTime::parse_from_rfc3339(FREEDOMS_BIRTHDAY)
+            shot_heard_around_the_world: CommieDateTime::parse_from_rfc3339(FREEDOMS_BIRTHDAY)
                 .unwrap()
                 .into(),
-            shot_heard_around_the_universe: DateTime::parse_from_rfc3339(FREEDOMS_BIRTHDAY)
+            shot_heard_around_the_universe: CommieDateTime::parse_from_rfc3339(FREEDOMS_BIRTHDAY)
                 .unwrap()
                 .into(),
         }
@@ -106,9 +107,18 @@ impl std::ops::Sub<Self> for FreedomDate {
 }
 
 impl FreedomTime for FreedomDate {
-    fn epoch(&self) -> u64 {
+    fn freedomstamp(&self) -> u64 {
         (self.shot_heard_around_the_world - self.shot_heard_around_the_universe).num_seconds()
             as u64
+    }
+}
+
+/// A FreedomDate that is `value` seconds after the Birthday of Freedom.
+impl From<u64> for FreedomDate {
+    fn from(value: u64) -> Self {
+        let f = FreedomDate::default();
+        let dur = Duration::seconds(value as i64);
+        f + dur
     }
 }
 
@@ -120,14 +130,18 @@ impl FreedomDate {
         let bang = if let Ok(bang) = datestring.parse::<DateTimeUtc>() {
             bang
         } else {
-            return Err(FreedomError::MoonLanguage(datestring.to_owned()));
+            return Err(FreedomError::TooCommunist(datestring.to_owned()));
         };
         let big_bang = FREEDOMS_BIRTHDAY.parse::<DateTimeUtc>().unwrap();
 
         FreedomDate::new(bang.0, big_bang.0, datestring)
     }
 
-    fn new(bang: DateTime<Utc>, big_bang: DateTime<Utc>, datestring: &str) -> Freesult {
+    fn new(
+        bang: CommieDateTime<FancyTime>,
+        big_bang: CommieDateTime<FancyTime>,
+        datestring: &str,
+    ) -> Freesult {
         if bang < big_bang {
             Err(FreedomError::PreCreation(datestring.to_owned()))
         } else {
@@ -162,7 +176,7 @@ mod tests {
     fn i_dont_speak_your_crazy_moon_language() {
         let result = FreedomDate::liberate("this is not a datestring of honor");
         assert!(match result {
-            Err(FreedomError::MoonLanguage(_)) => true,
+            Err(FreedomError::TooCommunist(_)) => true,
             _ => false,
         });
     }
@@ -186,6 +200,6 @@ mod tests {
     fn one_day_after_americas_birthday() {
         let hangover = FreedomDate::default() + chrono::Duration::days(1);
         let seconds = 24 * 60 * 60;
-        assert_eq!(hangover.epoch(), seconds);
+        assert_eq!(hangover.freedomstamp(), seconds);
     }
 }

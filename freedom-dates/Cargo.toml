@@ -1,7 +1,14 @@
 [package]
 name = "freedom-dates"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
+
+description = "Create and print dates in Freedom Format."
+
+keywords = ["freedom", "datetime"]
+
+license-file = "LICENSE.md"
+readme = "README.md"
 
 [dependencies]
 chrono = "0.4"
