@@ -123,7 +123,7 @@ impl From<u64> for FreedomDate {
 }
 
 impl FreedomDate {
-    /// To liberate a representation of a date is to make it Free. But the tree of FreeDates must
+    /// To liberate a representation of a date is to make it Free. But the FreeDate tree must
     /// occasionally be watered with the blood of badly-formed datestrings, and here is where the
     /// true test of Datriots is found.
     pub fn liberate(datestring: &str) -> Freesult {
